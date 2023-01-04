@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.3",
+    "@material-tailwind/react": "^1.2.5",
     "@next/font": "13.1.1",
     "@types/react-dom": "18.0.10",
     "eslint": "8.30.0",
