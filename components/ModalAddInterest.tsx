@@ -41,7 +41,8 @@ const ModalAddInterest = () => {
         addInterest({ variables: { interest: selectedInterest, tag: selectedTag } })
     }, [adding]) */
     const addInte = () => {
-        addInterest({ variables: { interest: selectedInterest, tag: selectedTag } })
+        const tag = selectedTag.split("#")[1]
+        addInterest({ variables: { interest: selectedInterest, tag: tag } })
         console.log(result)
     }
     return (
