@@ -1,6 +1,9 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
+import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { TagContext } from "../pages/index";
+import { ModalContext } from "../pages/index";
+
 const ADD_INTEREST = gql`
     mutation MergeTagWithInterest($interest: String, $tag: String) {
         mergeTagWithInterest(interest: $interest, tag: $tag) {
@@ -15,35 +18,58 @@ const GET_INTERESTS = gql`
     query Tags {
         interests {
             name
+            tags {
+                name
+            }
+        }
+    }
+`
+const GET_INTERESTS_BY_TAG = gql`
+    query Query($name: String) {
+        tag(name: $name) {
+            interests {
+                name
+            }
         }
     }
 `
 const ModalAddInterest = () => {
+    const router = useRouter();
     const selectedTag = useContext(TagContext)
-    console.log(selectedTag)
+    const tag = selectedTag.split("#")[1]
+    const modal = useContext(ModalContext);
     const [selectedInterest, setSelectedInterest] = useState("")
     const { loading, error, data } = useQuery(GET_INTERESTS);
-    const options: any = [];
+    const resultTag = useQuery(GET_INTERESTS_BY_TAG, {
+        variables: { name: tag }
+    })
+    let options: any = [];
     data?.interests.forEach((interest: any) => {
         options.push({
             label: interest.name
         })
     })
+
+    if(resultTag?.data?.tag) {
+        resultTag?.data?.tag.map((op) => {
+            console.log(op)
+            op.interests.map((interest, i) => {
+                options = options.filter((op) => {
+                    return interest.name !== op.label
+                })
+            })
+        }) 
+    }
+    
     const [addInterest, result] = useMutation(ADD_INTEREST)
-    /* useEffect(() => {
-        setAdding(false)
 
-        const [addInterest, { data, loading, error }] = useMutation(ADD_INTEREST);
-        console.log("data: ", data)
-        console.log("loading: ", loading)
-        console.log("loading: ", error)
-
-        addInterest({ variables: { interest: selectedInterest, tag: selectedTag } })
-    }, [adding]) */
     const addInte = () => {
-        const tag = selectedTag.split("#")[1]
         addInterest({ variables: { interest: selectedInterest, tag: tag } })
-        console.log(result)
+        if(result.loading) return 'Loading...'
+        if(result.error) return `Error: ${result.error.message}`
+        
+        router.replace(router.asPath)
+        modal?.setModal(false)
     }
     return (
         <>
@@ -68,7 +94,7 @@ const ModalAddInterest = () => {
                             <div className='static overflow-visible z-50'>
                                 {options &&
                                     <ul className='px-2 divide-y max-h-64 overflow-y-scroll'>
-                                        {options.map((interest, i) => {
+                                        {options.map((interest: any, i: any) => {
                                             return (
                                                 <li key={i} onClick={() => { setSelectedInterest(interest.label); }} className={selectedInterest !== interest.label ? 'hover:bg-gray-50' : 'bg-gray-200'}>
                                                     {interest.label}
@@ -83,7 +109,7 @@ const ModalAddInterest = () => {
                                     onClick={addInte}>
                                     Add Interest
                                 </button>
-                                <button type="button" className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Cancel</button>
+                                <button type="button" onClick={() => { modal?.setModal(false) }} className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Cancel</button>
                             </div>
                         </div>
                     </div>
