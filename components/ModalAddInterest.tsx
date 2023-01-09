@@ -24,6 +24,7 @@ const GET_INTERESTS = gql`
         }
     }
 `
+
 const GET_INTERESTS_BY_TAG = gql`
     query Query($name: String) {
         tag(name: $name) {
@@ -33,6 +34,7 @@ const GET_INTERESTS_BY_TAG = gql`
         }
     }
 `
+
 const ModalAddInterest = () => {
     const router = useRouter();
     const selectedTag = useContext(TagContext)
@@ -49,10 +51,8 @@ const ModalAddInterest = () => {
             label: interest.name
         })
     })
-
     if(resultTag?.data?.tag) {
         resultTag?.data?.tag.map((op) => {
-            console.log(op)
             op.interests.map((interest, i) => {
                 options = options.filter((op) => {
                     return interest.name !== op.label
