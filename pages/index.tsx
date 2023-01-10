@@ -52,14 +52,20 @@ export default function Home() {
         }
     }
     `
-  const interests = useQuery(GET_INTERESTS)
   const { loading, error, data } = useQuery(GET_TAGS);
- 
+  console.log(error)
+
   const Hit = (props) => {
-    console.log(props)
     return (
-      <div className='py-1'>
-        {props.hit.tagName}
+      <div className='w-full grid grid-cols-2 items-center h-10'>
+        <div>
+          {props.hit.tagName}
+        </div>
+        <div className="grid justify-self-end bg-gray-400 hover:bg-gray-500 cursor-pointer px-1 rounded-lg"
+          onClick={() => { setSelectedTag(props.hit.tagName); setModal(true) }}>
+          +
+        </div>
+        {modal && <ModalAddInterest />}
       </div>
     )
   }
@@ -72,11 +78,12 @@ export default function Home() {
           <MenuBar props={"init"}></MenuBar>
           <div className="w-[100%] flex justify-center">
             <InstantSearch indexName='staging_hashtags' searchClient={searchClient} >
+              <Configure hitsPerPage={10} />
               {data != undefined ? <ul className='grid mt-10 w-[50%] overflow-y-auto max-h-[50em] p-2 scrollbar-hide'>
                 <SearchBox
                   placeholder='Search your tag...'
-                  onFocus={() => {setFocused(true)}}
-                  onBlur={() => {setFocused(false)}}
+                  onFocus={() => { setFocused(true) }}
+                  onBlurCapture={() => { setFocused(false) }}
                   submitIconComponent={() => { return <></> }}
                   loadingIconComponent={() => { return <></> }}
                   resetIconComponent={() => { return <></> }}
@@ -87,10 +94,14 @@ export default function Home() {
                   }}
                 />
                 {focused && (
-                  <div className='bg-white border-gray-400 absolute w-full mt-6'>
-                    <Hits hitComponent={Hit}/>
-                  </div>
-                  )}
+                  <Hits hitComponent={Hit}
+                    classNames={{
+                      root: "absolute border-2 border-gray-500 bg-white w-[50%] rounded-lg flex items-center mt-8",
+                      list: "w-[25%]",
+                      item: "hover:bg-gray-300 rounded-lg w-full"
+                    }}
+                  />
+                )}
                 {data.tags.map((tag) => {
                   return (
                     <div className="py-3 sm:py-4 text-gray-900 bg-gray-200 rounded-lg my-1 px-2">
@@ -107,7 +118,7 @@ export default function Home() {
                             </div>
                           )
                         })}
-                        <div onClick={() => { setSelectedTag(tag.name); setModal(true) }}
+                        <div onClick={() => { setFocused(true); setSelectedTag(tag.name); setModal(true) }}
                           className="inline-flex cursor-pointer bg-blue-400 hover:bg-blue-500 items-center justify-center text-base font-semibold text-white w-7 rounded-lg py-1">
                           +
                         </div>
