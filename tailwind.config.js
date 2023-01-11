@@ -6,7 +6,10 @@ module.exports = {
   ],
   theme: {
     extend: {
-      
+      backdropBlur: {
+        xs: '2px',
+        xico: '1px'
+      }
     },
   },
   plugins: [],

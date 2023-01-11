@@ -61,7 +61,7 @@ export default function Home() {
         <div>
           {props.hit.tagName}
         </div>
-        <div className="grid justify-self-end bg-gray-400 hover:bg-gray-500 cursor-pointer px-1 rounded-lg"
+        <div className="grid justify-self-end bg-gray-400 hover:bg-gray-500 cursor-pointer px-2 rounded-full mr-2"
           onClick={() => { setSelectedTag(props.hit.tagName); setModal(true) }}>
           +
         </div>
@@ -81,9 +81,9 @@ export default function Home() {
               <Configure hitsPerPage={10} />
               {data != undefined ? <ul className='grid mt-10 w-[50%] overflow-y-auto max-h-[50em] p-2 scrollbar-hide'>
                 <SearchBox
-                  placeholder='Search your tag...'
+                  placeholder='Search your tag..'
                   onFocus={() => { setFocused(true) }}
-                  onBlurCapture={() => { setFocused(false) }}
+                  onKeyDown={() => { setFocused(true) }}
                   submitIconComponent={() => { return <></> }}
                   loadingIconComponent={() => { return <></> }}
                   resetIconComponent={() => { return <></> }}
@@ -95,9 +95,10 @@ export default function Home() {
                 />
                 {focused && (
                   <Hits hitComponent={Hit}
+                    onMouseLeave={() => { setFocused(false)} }
                     classNames={{
-                      root: "absolute border-2 border-gray-500 bg-white w-[50%] rounded-lg flex items-center mt-8",
-                      list: "w-[25%]",
+                      root: "absolute border-2 border-gray-500 bg-white w-auto rounded-lg flex items-center mt-6",
+                      list: "w-auto",
                       item: "hover:bg-gray-300 rounded-lg w-full"
                     }}
                   />
