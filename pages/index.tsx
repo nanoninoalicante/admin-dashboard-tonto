@@ -53,7 +53,6 @@ export default function Home() {
     }
     `
   const { loading, error, data } = useQuery(GET_TAGS);
-  console.log(error)
 
   const Hit = (props) => {
     return (
@@ -103,18 +102,18 @@ export default function Home() {
                     }}
                   />
                 )}
-                {data.tags.map((tag) => {
+                {data.tags.map((tag, i) => {
                   return (
-                    <div className="py-3 sm:py-4 text-gray-900 bg-gray-200 rounded-lg my-1 px-2">
+                    <div key={i} className="py-3 sm:py-4 text-gray-900 bg-gray-200 rounded-lg my-1 px-2">
                       <div className="flex items-center space-x-4">
                         <div className="flex-1 min-w-0 hover:underline">
                           <p className="text-sm font-medium">
                             {tag.name}
                           </p>
                         </div>
-                        {tag?.interests && tag.interests.map((interest) => {
+                        {tag?.interests && tag.interests.map((interest, i) => {
                           return (
-                            <div className='bg-green-500 rounded-lg py-1 px-2 text-white'>
+                            <div key={i} className='bg-green-500 rounded-lg py-1 px-2 text-white'>
                               {interest.name}
                             </div>
                           )
