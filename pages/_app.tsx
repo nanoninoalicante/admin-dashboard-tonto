@@ -4,7 +4,7 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 
 export default function App({ Component, pageProps }: AppProps) {
   const client = new ApolloClient({
-    uri: 'https://tonto-admin-graphql-staging-nov2022-us-gtngqbdaaq-uk.a.run.app/graphql',
+    uri: process.env.NEXT_PUBLIC_URI_GRAPHQL,
     cache: new InMemoryCache(),
   });
   return (

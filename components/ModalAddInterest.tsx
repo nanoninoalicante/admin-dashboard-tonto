@@ -71,6 +71,7 @@ const ModalAddInterest = () => {
         router.replace(router.asPath)
         modal?.setModal(false)
     }
+    console.log(data)
     return (
         <>
             <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">

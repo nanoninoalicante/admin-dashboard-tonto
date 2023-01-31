@@ -1,5 +1,5 @@
 import { Inter } from '@next/font/google'
-import { ApolloClient, InMemoryCache, ApolloProvider, gql, useQuery, useMutation } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, gql, useQuery, useMutation, ApolloQueryResult } from '@apollo/client';
 import MenuBar from '../components/MenuBar';
 import { useContext, useEffect, useState } from 'react';
 import React from 'react';
@@ -17,7 +17,8 @@ import {
 } from 'react-instantsearch-hooks-web';
 interface ModalContext {
   modal: boolean,
-  setModal: React.Dispatch<React.SetStateAction<boolean>>
+  setModal: React.Dispatch<React.SetStateAction<boolean>>,
+  refetch: any
 }
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
@@ -42,17 +43,9 @@ export default function Home() {
     }
   `;
 
-  const GET_INTERESTS = gql`
-    query Tags {
-        interests {
-            name
-            tags {
-                name
-            }
-        }
-    }
-    `
-  const { loading, error, data } = useQuery(GET_TAGS);
+  const { loading, error, data, refetch } = useQuery(GET_TAGS, {
+    variables: { limit: 100, skip: 2}
+  });
 
   const Hit = (props) => {
     return (
@@ -71,7 +64,7 @@ export default function Home() {
   return (
     <TagContext.Provider value={selectedTag} >
       <ModalContext.Provider value={{
-        modal, setModal
+        modal, setModal, refetch
       }}>
         <div className='h-screen bg-white'>
           <MenuBar props={"init"}></MenuBar>
@@ -94,7 +87,7 @@ export default function Home() {
                 />
                 {focused && (
                   <Hits hitComponent={Hit}
-                    onMouseLeave={() => { setFocused(false)} }
+                    onMouseLeave={() => { setFocused(false) }}
                     classNames={{
                       root: "absolute border-2 border-gray-500 bg-white w-auto rounded-lg flex items-center mt-6",
                       list: "w-auto",
@@ -118,7 +111,7 @@ export default function Home() {
                             </div>
                           )
                         })}
-                        <div onClick={() => { setFocused(true); setSelectedTag(tag.name); setModal(true) }}
+                        <div onClick={() => { setSelectedTag(tag.name); setModal(true) }}
                           className="inline-flex cursor-pointer bg-blue-400 hover:bg-blue-500 items-center justify-center text-base font-semibold text-white w-7 rounded-lg py-1">
                           +
                         </div>
