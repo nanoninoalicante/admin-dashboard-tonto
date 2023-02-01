@@ -25,14 +25,8 @@ const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_API_KEY!
 );
 
-export const TagContext = React.createContext('tag')
-export const ModalContext = React.createContext<ModalContext | null>(null)
-export default function Home() {
-  const [modal, setModal] = useState(false)
-  const [selectedTag, setSelectedTag] = useState("")
-  const [focused, setFocused] = useState(false)
-
-  const GET_TAGS = gql`
+const ITEMS_PER_PAGE = 10;
+const GET_TAGS = gql`
     query Tags($limit: Int, $skip: Int) {
         tags(limit: $limit, skip: $skip) {
             name
@@ -43,16 +37,24 @@ export default function Home() {
     }
   `;
 
+export const TagContext = React.createContext('tag')
+export const ModalContext = React.createContext<ModalContext | null>(null)
+export default function Home() {
+  const [modal, setModal] = useState(false);
+  const [selectedTag, setSelectedTag] = useState("");
+  const [focused, setFocused] = useState(false);
+  const [page, setPage] = useState(1);
+  const offset = (page - 1) * ITEMS_PER_PAGE;
+
+
   const { loading, error, data, refetch } = useQuery(GET_TAGS, {
-    variables: { limit: 10, skip: 2 }
+    variables: { limit: ITEMS_PER_PAGE, skip: offset }
   });
 
-  const Hit = (props) => {
+  const Hit = (props: any) => {
     return (
       <div className='w-full grid grid-cols-2 items-center h-10'>
-        <div>
-          {props.hit.tagName}
-        </div>
+        {props.hit.tagName}
         <div className="grid justify-self-end bg-gray-400 hover:bg-gray-500 cursor-pointer px-2 rounded-full mr-2"
           onClick={() => { setSelectedTag(props.hit.tagName); setModal(true) }}>
           +
@@ -66,9 +68,8 @@ export default function Home() {
       <ModalContext.Provider value={{
         modal, setModal, refetch
       }}>
-        <div className='h-screen bg-white'>
-          <MenuBar props={"init"}></MenuBar>
-          <div className="w-[100%] flex justify-center">
+        <div className='flex flex-col place-items-center'>
+          <div className="w-[800px]">
             <InstantSearch indexName='staging_hashtags' searchClient={searchClient} >
               <Configure hitsPerPage={10} />
               {data != undefined ?
@@ -81,7 +82,7 @@ export default function Home() {
                     loadingIconComponent={() => { return <></> }}
                     resetIconComponent={() => { return <></> }}
                     classNames={{
-                      root: 'w-[300%] mt-8',
+                      root: 'w-full mt-8',
                       form: 'w-full border rounded-lg',
                       input: 'bg-transparent w-full px-2 focus:outline-none',
                     }}
@@ -90,13 +91,13 @@ export default function Home() {
                     <Hits hitComponent={Hit}
                       onMouseLeave={() => { setFocused(false) }}
                       classNames={{
-                        root: "absolute border-2 border-gray-500 bg-white w-auto rounded-lg flex items-center mt-6",
-                        list: "w-auto",
+                        root: "absolute border-2 border-gray-500 bg-white  rounded-lg mt-16 w-1/3",
+                        list: "w-auto pl-2",
                         item: "hover:bg-gray-300 rounded-lg w-full"
                       }}
                     />
                   )}
-                  <ul className='grid mt-2 w-[300%] max-h-[80vh] overflow-y-scroll p-2 scrollbar-hide'>
+                  <ul className='grid mt-2 w-full max-h-[85vh] overflow-y-scroll p-2 scrollbar-hide'>
                     {data.tags.map((tag, i) => {
                       return (
                         <div key={i} className="py-3 sm:py-4 text-gray-900 bg-gray-200 rounded-lg my-1 px-2">
@@ -121,6 +122,22 @@ export default function Home() {
                         </div>
                       )
                     })}
+                    <div className='flex justify-center gap-2 mt-2'>
+                      <button
+                        onClick={() => setPage(page - 1)}
+                        disabled={page <= 1}
+                        className="bg-[#17255A] rounded-lg text-white p-1 w-20"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        onClick={() => setPage(page + 1)}
+                        disabled={data.tags.length < ITEMS_PER_PAGE}
+                        className="bg-[#17255A] rounded-lg text-white p-1 w-20"
+                      >
+                        Next
+                      </button>
+                    </div>
                   </ul>
                 </section>
 
