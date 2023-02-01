@@ -69,6 +69,7 @@ export default function Home() {
         modal, setModal, refetch
       }}>
         <div className='flex flex-col place-items-center'>
+          <p className='flex text-xl font-normal mt-4'>ADMIN DASHBOARD TONTO</p>
           <div className="w-[800px]">
             <InstantSearch indexName='staging_hashtags' searchClient={searchClient} >
               <Configure hitsPerPage={10} />
