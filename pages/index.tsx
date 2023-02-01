@@ -44,7 +44,7 @@ export default function Home() {
   `;
 
   const { loading, error, data, refetch } = useQuery(GET_TAGS, {
-    variables: { limit: 100, skip: 2}
+    variables: { limit: 10, skip: 2 }
   });
 
   const Hit = (props) => {
@@ -71,55 +71,60 @@ export default function Home() {
           <div className="w-[100%] flex justify-center">
             <InstantSearch indexName='staging_hashtags' searchClient={searchClient} >
               <Configure hitsPerPage={10} />
-              {data != undefined ? <ul className='grid mt-10 w-[50%] overflow-y-auto max-h-[50em] p-2 scrollbar-hide'>
-                <SearchBox
-                  placeholder='Search your tag..'
-                  onFocus={() => { setFocused(true) }}
-                  onKeyDown={() => { setFocused(true) }}
-                  submitIconComponent={() => { return <></> }}
-                  loadingIconComponent={() => { return <></> }}
-                  resetIconComponent={() => { return <></> }}
-                  classNames={{
-                    root: 'w-full',
-                    form: 'w-full border rounded-lg',
-                    input: 'bg-transparent w-full px-2 focus:outline-none',
-                  }}
-                />
-                {focused && (
-                  <Hits hitComponent={Hit}
-                    onMouseLeave={() => { setFocused(false) }}
+              {data != undefined ?
+                <section className='flex flex-col place-items-center'>
+                  <SearchBox
+                    placeholder='Search your tag..'
+                    onFocus={() => { setFocused(true) }}
+                    onKeyDown={() => { setFocused(true) }}
+                    submitIconComponent={() => { return <></> }}
+                    loadingIconComponent={() => { return <></> }}
+                    resetIconComponent={() => { return <></> }}
                     classNames={{
-                      root: "absolute border-2 border-gray-500 bg-white w-auto rounded-lg flex items-center mt-6",
-                      list: "w-auto",
-                      item: "hover:bg-gray-300 rounded-lg w-full"
+                      root: 'w-[300%] mt-8',
+                      form: 'w-full border rounded-lg',
+                      input: 'bg-transparent w-full px-2 focus:outline-none',
                     }}
                   />
-                )}
-                {data.tags.map((tag, i) => {
-                  return (
-                    <div key={i} className="py-3 sm:py-4 text-gray-900 bg-gray-200 rounded-lg my-1 px-2">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex-1 min-w-0 hover:underline">
-                          <p className="text-sm font-medium">
-                            {tag.name}
-                          </p>
-                        </div>
-                        {tag?.interests && tag.interests.map((interest, i) => {
-                          return (
-                            <div key={i} className='bg-green-500 rounded-lg py-1 px-2 text-white'>
-                              {interest.name}
+                  {focused && (
+                    <Hits hitComponent={Hit}
+                      onMouseLeave={() => { setFocused(false) }}
+                      classNames={{
+                        root: "absolute border-2 border-gray-500 bg-white w-auto rounded-lg flex items-center mt-6",
+                        list: "w-auto",
+                        item: "hover:bg-gray-300 rounded-lg w-full"
+                      }}
+                    />
+                  )}
+                  <ul className='grid mt-2 w-[300%] max-h-[80vh] overflow-y-scroll p-2 scrollbar-hide'>
+                    {data.tags.map((tag, i) => {
+                      return (
+                        <div key={i} className="py-3 sm:py-4 text-gray-900 bg-gray-200 rounded-lg my-1 px-2">
+                          <div className="flex items-center space-x-4">
+                            <div className="flex-1 min-w-0 hover:underline">
+                              <p className="text-sm font-medium">
+                                {tag.name}
+                              </p>
                             </div>
-                          )
-                        })}
-                        <div onClick={() => { setSelectedTag(tag.name); setModal(true) }}
-                          className="inline-flex cursor-pointer bg-blue-400 hover:bg-blue-500 items-center justify-center text-base font-semibold text-white w-7 rounded-lg py-1">
-                          +
+                            {tag?.interests && tag.interests.map((interest, i) => {
+                              return (
+                                <div key={i} className='bg-green-500 rounded-lg py-1 px-2 text-white'>
+                                  {interest.name}
+                                </div>
+                              )
+                            })}
+                            <div onClick={() => { setSelectedTag(tag.name); setModal(true) }}
+                              className="inline-flex cursor-pointer bg-blue-400 hover:bg-blue-500 items-center justify-center text-base font-semibold text-white w-7 rounded-lg py-1">
+                              +
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </ul> :
+                      )
+                    })}
+                  </ul>
+                </section>
+
+                :
                 <div role="status" className='flex justify-center mt-14'>
                   <svg aria-hidden="true" className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
