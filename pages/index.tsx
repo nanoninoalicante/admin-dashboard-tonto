@@ -1,20 +1,9 @@
-import { Inter } from '@next/font/google'
-import { ApolloClient, InMemoryCache, ApolloProvider, gql, useQuery, useMutation, ApolloQueryResult } from '@apollo/client';
-import MenuBar from '../components/MenuBar';
+import { gql, useQuery } from '@apollo/client';
 import { useContext, useEffect, useState } from 'react';
 import React from 'react';
 import ModalAddInterest from '../components/ModalAddInterest';
 import algoliasearch from 'algoliasearch';
-import {
-  InstantSearch,
-  Hits,
-  SearchBox,
-  Highlight,
-  Configure,
-  Menu,
-  RefinementList,
-  InfiniteHits
-} from 'react-instantsearch-hooks-web';
+import SearchBar from '../components/SearchBar';
 interface ModalContext {
   modal: boolean,
   setModal: React.Dispatch<React.SetStateAction<boolean>>,
@@ -42,62 +31,24 @@ export const ModalContext = React.createContext<ModalContext | null>(null)
 export default function Home() {
   const [modal, setModal] = useState(false);
   const [selectedTag, setSelectedTag] = useState("");
-  const [focused, setFocused] = useState(false);
   const [page, setPage] = useState(1);
   const offset = (page - 1) * ITEMS_PER_PAGE;
-
 
   const { loading, error, data, refetch } = useQuery(GET_TAGS, {
     variables: { limit: ITEMS_PER_PAGE, skip: offset }
   });
-
-  const Hit = (props: any) => {
-    return (
-      <div className='w-full grid grid-cols-2 items-center h-10'>
-        {props.hit.tagName}
-        <div className="grid justify-self-end bg-gray-400 hover:bg-gray-500 cursor-pointer px-2 rounded-full mr-2"
-          onClick={() => { setSelectedTag(props.hit.tagName); setModal(true) }}>
-          +
-        </div>
-        {modal && <ModalAddInterest />}
-      </div>
-    )
-  }
+  
   return (
     <TagContext.Provider value={selectedTag} >
       <ModalContext.Provider value={{
         modal, setModal, refetch
       }}>
         <div className='flex flex-col place-items-center'>
-          <p className='flex text-xl font-normal mt-4'>ADMIN DASHBOARD TONTO</p>
+          <p className='flex text-xl font-normal mt-4'> ADMIN DASHBOARD TONTO </p>
           <div className="w-[800px]">
-            <InstantSearch indexName='staging_hashtags' searchClient={searchClient} >
-              <Configure hitsPerPage={10} />
+            <SearchBar />
               {data != undefined ?
                 <section className='flex flex-col place-items-center'>
-                  <SearchBox
-                    placeholder='Search your tag..'
-                    onFocus={() => { setFocused(true) }}
-                    onKeyDown={() => { setFocused(true) }}
-                    submitIconComponent={() => { return <></> }}
-                    loadingIconComponent={() => { return <></> }}
-                    resetIconComponent={() => { return <></> }}
-                    classNames={{
-                      root: 'w-full mt-8',
-                      form: 'w-full border rounded-lg',
-                      input: 'bg-transparent w-full px-2 focus:outline-none',
-                    }}
-                  />
-                  {focused && (
-                    <Hits hitComponent={Hit}
-                      onMouseLeave={() => { setFocused(false) }}
-                      classNames={{
-                        root: "absolute border-2 border-gray-500 bg-white  rounded-lg mt-16 w-1/3",
-                        list: "w-auto pl-2",
-                        item: "hover:bg-gray-300 rounded-lg w-full"
-                      }}
-                    />
-                  )}
                   <ul className='grid mt-2 w-full max-h-[85vh] overflow-y-scroll p-2 scrollbar-hide'>
                     {data.tags.map((tag, i) => {
                       return (
@@ -141,7 +92,6 @@ export default function Home() {
                     </div>
                   </ul>
                 </section>
-
                 :
                 <div role="status" className='flex justify-center mt-14'>
                   <svg aria-hidden="true" className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -151,7 +101,7 @@ export default function Home() {
                 </div>
               }
               {modal && <ModalAddInterest />}
-            </InstantSearch>
+            
           </div>
         </div>
       </ModalContext.Provider>
