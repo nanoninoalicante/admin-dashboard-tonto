@@ -39,7 +39,7 @@ export default function Home() {
   });
   
   return (
-    <TagContext.Provider value={selectedTag} >
+    <TagContext.Provider value={selectedTag}>
       <ModalContext.Provider value={{
         modal, setModal, refetch
       }}>
