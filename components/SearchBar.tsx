@@ -25,7 +25,7 @@ const SearchBar = () => {
         )
     }
     return (
-        <InstantSearch indexName='staging_hashtags' searchClient={searchClient} >
+        <InstantSearch indexName='prod_hashtags' searchClient={searchClient} >
             <Configure hitsPerPage={10} />
             <SearchBox
                 placeholder='Search your tag...'
