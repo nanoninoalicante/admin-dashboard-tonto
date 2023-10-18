@@ -1,29 +1,35 @@
-import { ChatCompletionRequestMessageRoleEnum, Configuration, OpenAIApi } from "openai";
-import { ApolloClient, InMemoryCache, ApolloProvider, gql, useQuery, useMutation, ApolloQueryResult } from '@apollo/client';
+import { Configuration, OpenAIApi } from "openai";
+const interests = [
+  "Networking",
+  "Shows",
+  "Sports",
+  "Life",
+  "Comedy",
+  "Tech",
+  "Music",
+  "Interviews",
+  "Arts",
+  "Languages",
+  "News",
+  "Identity",
+  "Travel",
+];
+async function getInterestFromAI(tag: string) {
+    const configuration = new Configuration({
+        apiKey: "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",
+    });
+    const openai = new OpenAIApi(configuration);
 
-const apiKey = "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"
-const client = new ApolloClient({
-    uri: process.env.NEXT_PUBLIC_URI_GRAPHQL,
-    cache: new InMemoryCache(),
-  });
+    const completion = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+    messages: [{role: "user", content: `${interests} from this list choose just one for this tag ${tag}`}],
+    });
+    console.log(completion.data.choices[0].message);
+    return(completion.data.choices[0].message)
+}
 
-  const INTERESTS = [
-    "Networking",
-    "Shows",
-    "Sports",
-    "Life",
-    "Comedy",
-    "Tech",
-    "Music",
-    "Interviews",
-    "Arts",
-    "Languages",
-    "News",
-    "Identity",
-    "Travel",
-  ];
-const configuration = new Configuration({ apiKey });
-const openai = new OpenAIApi(configuration);
+export default getInterestFromAI;
+  
 
 /* export async function getInterests(tag: string) {
     const response = await openai.createChatCompletion({
