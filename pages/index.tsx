@@ -56,7 +56,7 @@ export default function Home() {
           <p className='flex text-xl font-normal mt-4'> ADMIN DASHBOARD TONTO </p>
           <form onSubmit={handleSubmit}>
             <textarea id="textArea" value={textValue} onChange={(e) => setTextValue(e.target.value)} />
-            <button type="submit">Enviar</button>
+            <button type="submit">Send</button>
           </form>
           <div className="w-[800px]">
             <SearchBar />
